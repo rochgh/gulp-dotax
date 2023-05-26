@@ -179,6 +179,11 @@ export function sheetToKV(options: SheetToKVOptions) {
                         return; // 不输出到kv文件
                     }
 
+                    // 忽略的key
+                    if (key.startsWith(`#`)){
+                        return;
+                    }
+
                     if (abilityValuesBlock && key !== `AbilityValues[{]`) {
                         if (cell == `` || cell == undefined) return;
                         let values_key = '';

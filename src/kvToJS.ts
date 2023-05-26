@@ -66,7 +66,7 @@ export function kvToJS(options?: KVToJSOptions) {
                         typeof value === 'string' &&
                         ArraySeperator.test(value)
                     ) {
-                        return value.split(ArraySeperator).map((v) => v.trim());
+                        return value.split(ArraySeperator).filter(item => item !== "").map((v) => v.trim());
                     }
                     return value;
                 },
