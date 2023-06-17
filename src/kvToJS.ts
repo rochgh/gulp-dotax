@@ -12,6 +12,8 @@ export interface KVToJSOptions {
     AutoConvertToArray?: boolean;
     /** 数组的分隔符 目前是 竖杠 | 和 # 号 */
     ArraySeperator?: string;
+    /** 数组2的分隔符 目前是 : 号 */
+    Array2Seperator?: string;
     /** 是否自动合并#base */
     AutoMergeBases?: boolean;
 }
@@ -20,6 +22,7 @@ export function kvToJS(options?: KVToJSOptions) {
     const {
         AutoConvertToArray = true,
         ArraySeperator = /[\|#]/,
+        Array2Seperator = /[\:]/,
         AutoMergeBases = true,
     } = options ?? {};
     const parseKV = async (file: Vinyl, enc: any, next: Function) => {
@@ -66,7 +69,25 @@ export function kvToJS(options?: KVToJSOptions) {
                         typeof value === 'string' &&
                         ArraySeperator.test(value)
                     ) {
-                        return value.split(ArraySeperator).filter(item => item !== "").map((v) => v.trim());
+
+                        // 一维数组
+                        let arr1 = value.split(ArraySeperator).filter(item => item !== "").map((v) => v.trim());
+                        let arr2 = [];
+                        // 二维数组
+                        for (let index = 0; index < arr1.length; index++) {
+                            const element = arr1[index];
+                            if(typeof element === 'string' && Array2Seperator.test(element)){
+                                arr2.push(element.split(Array2Seperator).filter(item => item !== "").map((v) => v.trim()));
+                            }
+                        }
+
+                        if(arr2.length > 0){
+                            return arr2;
+                        }else{
+                            return arr1;
+                        }
+
+                        // return value.split(ArraySeperator).filter(item => item !== "").map((v) => v.trim());
                     }
                     return value;
                 },
